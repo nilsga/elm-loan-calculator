@@ -32,7 +32,7 @@ terms loan =
   let
     {terms, duration} = loan
   in
-    List.map (\n -> term loan (toFloat n)) [0..(terms * duration)]
+    List.map (\n -> term loan (toFloat n)) <| List.range 0 (terms * duration)
 
 termBalance: LoanDetails -> Float -> Float
 termBalance loan term =

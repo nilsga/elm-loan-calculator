@@ -1,13 +1,12 @@
 import Html exposing (..)
 import Html.Events exposing(onInput)
 import Html.Attributes exposing(placeholder)
-import Html.App as App
 import LoanCalculations exposing (..)
 import String
 
-main: Program Never
+main: Program Never Model Msg
 main =
-  App.beginnerProgram {
+  beginnerProgram {
     model = model,
     view = view,
     update = update
@@ -23,11 +22,11 @@ update: Msg -> Model -> Model
 update msg oldModel =
   case msg of
     LoanAmount newAmount ->
-      { oldModel | amount = Result.withDefault 2000000 (String.toFloat newAmount) }
+      { oldModel | amount = Result.withDefault 2000000 (String.toInt newAmount) }
     LoanInterestRate newInterestRate ->
       { oldModel | interestRate = Result.withDefault 0.025 (String.toFloat newInterestRate) }
     LoanDuration newDuration ->
-      { oldModel | duration = Result.withDefault 20 (String.toFloat newDuration) }
+      { oldModel | duration = Result.withDefault 20 (String.toInt newDuration) }
 
 
 view: Model -> Html Msg
