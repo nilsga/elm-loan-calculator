@@ -1,13 +1,20 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Events exposing (onInput)
-import Html.Attributes exposing (..)
 import LoanCalculations exposing (..)
 import Material.Textfield as Textfield
-import Material.Options as Options
+import Material.Options as Options exposing (css)
+import Material.Card as Card
+import Material.Color as Color
+import Material.Typography as Typography
+import Material.Button as Button
+import Material.Icon as Icon
 import Material
 import String
+
+
+white =
+    Color.text Color.white
 
 
 main : Program Never Model Msg
@@ -71,38 +78,46 @@ update msg oldModel =
                 Material.update Mdl msg_ oldModel
 
 
+textField : String -> Int -> Mdl -> (String -> Msg) -> Html Msg
+textField name index mdl msg =
+    Textfield.render Mdl
+        [ index ]
+        mdl
+        [ Textfield.floatingLabel
+        , Textfield.label name
+        , Options.onInput msg
+        ]
+        []
+
+
 view : Model -> Html Msg
 view model =
-    div []
-        [ div []
-            [ Textfield.render Mdl
-                [ 0 ]
-                model.mdl
-                [ Textfield.floatingLabel
-                , Textfield.label "Lånebeløp"
-                , Options.onInput LoanAmount
-                ]
-                []
+    Card.view
+        [ css "width" "400px"
+        , css "height" "400px"
+        ]
+        [ Card.title [ Color.background (Color.color Color.LightBlue Color.S400) ] [ Card.head [ white ] [ text "Lånedetaljer" ] ]
+        , Card.text []
+            [ textField "Lånbebeløp" 0 model.mdl LoanAmount
+            , textField "Nedbetalingstid" 1 model.mdl LoanDuration
+            , textField "Rente" 2 model.mdl LoanInterestRate
             ]
-        , div []
-            [ Textfield.render Mdl
+          -- Filler
+        , Card.actions
+            [ Card.border
+              -- Modify flexbox to accomodate small text in action block
+            , css "display" "flex"
+            , css "justify-content" "space-between"
+            , css "align-items" "center"
+            , css "padding" "8px 16px 8px 16px"
+            , Color.background (Color.color Color.LightBlue Color.S400)
+            , white
+            ]
+            [ Options.span [ Typography.caption, Typography.contrast 0.87 ] [ text (toString <| termAmount model.loanDetails) ]
+            , Button.render Mdl
                 [ 1 ]
                 model.mdl
-                [ Textfield.floatingLabel
-                , Textfield.label "Rente"
-                , Options.onInput LoanInterestRate
-                ]
-                []
+                [ Button.icon, Button.ripple ]
+                [ Icon.i "phone" ]
             ]
-        , div []
-            [ Textfield.render Mdl
-                [ 2 ]
-                model.mdl
-                [ Textfield.floatingLabel
-                , Textfield.label "Nedbetalingstid"
-                , Options.onInput LoanDuration
-                ]
-                []
-            ]
-        , div [] [ text (toString (termAmount model.loanDetails)) ]
         ]
