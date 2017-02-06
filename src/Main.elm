@@ -45,6 +45,7 @@ type Msg
     | LoanDuration String
     | Recalculate
     | Mdl (Material.Msg Msg)
+    | Batch (List Msg)
 
 
 model : Model
@@ -84,6 +85,23 @@ update msg oldModel =
             Mdl msg_ ->
                 Material.update Mdl msg_ oldModel
 
+            Batch listOfMsg ->
+                let
+                    ( finalModel, listOfFx ) =
+                        List.foldr
+                            (\msg ->
+                                \( mdl, fxList ) ->
+                                    let
+                                        ( newModel, newFx ) =
+                                            update msg mdl
+                                    in
+                                        ( newModel, fxList ++ [ newFx ] )
+                            )
+                            ( model, [] )
+                            (Debug.log "listOfMsg" listOfMsg)
+                in
+                    ( finalModel, Cmd.batch listOfFx )
+
 
 textField : String -> Int -> Mdl -> (String -> Msg) -> Html Msg
 textField name index mdl msg =
@@ -92,6 +110,7 @@ textField name index mdl msg =
         mdl
         [ Textfield.floatingLabel
         , Textfield.label name
+        , Options.dispatch Batch
         , Options.onInput msg
         , Options.onBlur Recalculate
         ]
