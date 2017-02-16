@@ -128,11 +128,6 @@ update msg oldModel =
                 Material.update Mdl msg_ oldModel
 
 
-test : ConvertedInput
-test =
-    LoanAmount 5
-
-
 processInput : RawInput -> Model -> ( Model, Cmd Msg )
 processInput msg model =
     let
